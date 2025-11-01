@@ -1,29 +1,16 @@
-
-###> symfony/framework-bundle ###
-/.env.dev
-/.env.test
-/.env.local
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
-/var/
+# .gitignore
+# Symfony
 /vendor/
+/var/
+/public/bundles/
+
+# Sensititve files
 /.env
+/.env.local
 /config/jwt/private.pem
 /config/jwt/public.pem
-###< symfony/framework-bundle ###
 
-###> phpunit/phpunit ###
-/phpunit.xml
-/.phpunit.cache/
-###< phpunit/phpunit ###
-
-###> symfony/asset-mapper ###
-/public/assets/
-/assets/vendor/
-###< symfony/asset-mapper ###
-
-###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
-###< lexik/jwt-authentication-bundle ###
+# IDE/OS files
+.idea/
+.vscode/
+.DS_Store
