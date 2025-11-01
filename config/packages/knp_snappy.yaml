@@ -1,9 +1,10 @@
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     '%env(WKHTMLTOPDF_PATH)%'
+        # ვიყენებთ კონკრეტულ მისამართს Docker კონტეინერის შიგნით
+        binary:     '/usr/local/bin/wkhtmltopdf'
         options:    []
     image:
-        enabled:    true
-        binary:     '%env(WKHTMLTOIMAGE_PATH)%'
-        options:    []
+        enabled:    false # ჩვენ ამას არ ვიყენებთ
+        # binary:     '/usr/local/bin/wkhtmltoimage'
+        # options:    []
