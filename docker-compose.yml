@@ -1,0 +1,62 @@
+services:
+    # 1. PHP-FPM სერვისი (ჩვენი აპლიკაცია)
+    php-fpm:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        container_name: contract_php
+        volumes:
+            # ვამაუნტებთ ჩვენს კოდს კონტეინერში
+            - .:/var/www/html
+        environment:
+            # .env ფაილიდან წამოიღებს ბაზის პარამეტრებს
+            - DATABASE_URL=${DATABASE_URL}
+            # სხვა საჭირო გარემოს ცვლადები
+            - APP_ENV=${APP_ENV:-dev}
+            - APP_SECRET=${APP_SECRET}
+        depends_on:
+            - db
+        networks:
+            - app_network
+
+    # 2. Nginx ვებ სერვერი
+    nginx:
+        image: nginx:1.25-alpine
+        container_name: contract_nginx
+        ports:
+            # ვხსნით 80 პორტს ლოკალურად
+            - "80:80"
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - php-fpm
+        networks:
+            - app_network
+
+    # 3. მონაცემთა ბაზა (MySQL)
+    db:
+        image: mysql:8.0
+        container_name: contract_db
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        volumes:
+            # ეს უზრუნველყოფს, რომ ბაზა არ წაიშალოს კონტეინერის გათიშვისას
+            - db_data:/var/lib/mysql
+        ports:
+            # შეგიძლია გახსნა ეს პორტი, თუ გინდა ბაზას დაუკავშირდე ლოკალური ხელსაწყოთი
+            - "3307:3306" # ლოკალურად 3307-ზე იქნება
+        networks:
+            - app_network
+
+# ქსელი, რომელშიც სერვისები "დაინახავენ" ერთმანეთს
+networks:
+    app_network:
+        driver: bridge
+
+# მონაცემთა ბაზის ფაილების შესანახი ვოლუმი
+volumes:
+    db_data:

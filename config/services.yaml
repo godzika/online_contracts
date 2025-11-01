@@ -1,0 +1,40 @@
+# config/services.yaml
+
+parameters:
+    # ეს ხაზი კითხულობს .env ფაილიდან FRONTEND_SIGN_URL-ს
+    app.frontend_sign_url: '%env(FRONTEND_SIGN_URL)%'
+
+    # === ეს არის შენი პრობლემის გამოსავალი ===
+    # 1. ვქმნით პარამეტრს, რომელიც მიუთითებს PDF-ის შესანახ პაპკაზე
+    app.pdf_storage_dir: '%kernel.project_dir%/var/contracts'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        # === ეს არის შენი პრობლემის გამოსავალი ===
+        # 2. ეს ბლოკი ეუბნება Symfony-ს:
+        # "თუ სადმე შეგხვდება არგუმენტი $pdfStorageDir, ავტომატურად ჩაუსვი app.pdf_storage_dir-ის მნიშვნელობა"
+        bind:
+            string $pdfStorageDir: '%app.pdf_storage_dir%'
+
+            # (ესეც დავამატეთ წინა ნაბიჯებში მეილის გასაგზავნად)
+            string $frontendSignUrl: '%app.frontend_sign_url%'
+
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    # controllers are imported separately to make them load faster
+    # (ეს ნაწილი სავარაუდოდ უკვე გექნება)
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']

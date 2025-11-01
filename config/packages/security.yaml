@@ -1,0 +1,42 @@
+security:
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    password_hashers:
+        App\Entity\User: 'auto'
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        # (1) ლოგინის Firewall-ი (საჯარო)
+        login:
+            pattern:  ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        # (2) ახალი საჯარო API-ს Firewall-ი (ეს უნდა იყოს ^/api-მდე)
+        public_api:
+            pattern:   ^/api/public
+            stateless: true
+            security: false # <-- ეს ხდის მას სრულიად საჯაროს
+
+        # (3) დაცული API-ს Firewall-ი (ეს უნდა იყოს ბოლოს)
+        api:
+            pattern:   ^/api
+            stateless: true
+            jwt: ~
+
+    access_control:
+        # access_control-ის წესები ახლა ემთხვევა firewall-ებს
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/public, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }

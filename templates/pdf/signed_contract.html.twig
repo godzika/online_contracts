@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="EN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ contract.title }}</title>
+    <style>
+        /* * ვიყენებთ DejaVu Sans-ს, რადგან ის მხარს უჭერს ქართულს
+         * და wkhtmltopdf-ს (ჩვენს Docker კონტეინერში) ესმის.
+         */
+        body {
+            font-family: "DejaVu Sans", sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        /* გვერდის ნუმერაცია */
+        @page {
+            margin: 25mm;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #111;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 16px;
+            color: #111;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 13px;
+            color: #222;
+            margin-top: 20px;
+            margin-bottom: 5px;
+        }
+
+        p, ul {
+            margin-bottom: 15px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        /* ვიყენებთ ცხრილს ინფორმაციის ლამაზად დასაყოფად */
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+        }
+        .meta-table th, .meta-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .meta-table th {
+            width: 30%;
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
+
+        /* ხელმოწერის ბლოკი */
+        .signature-box {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px; /* wkhtmltopdf-ს ესმის border-radius */
+        }
+
+        .signature-box h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .signature-box img {
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+    </style>
+</head>
+<body>
+
+<h1>{{ contract.title }}</h1>
+
+<table class="meta-table">
+    <tbody>
+    <tr>
+        <th>ხელმომწერი</th>
+        <td>{{ contract.signeeName }}</td>
+    </tr>
+    <tr>
+        <th>ელ. ფოსტა</th>
+        <td>{{ contract.signeeEmail }}</td>
+    </tr>
+    <tr>
+        <th>ხელმოწერის თარიღი</th>
+        <td>{{ signature.signedAt|date('Y-m-d H:i:s') }} (UTC)</td>
+    </tr>
+    <tr>
+        <th>IP მისამართი</th>
+        <td>{{ signature.ipAddress }}</td>
+    </tr>
+    </tbody>
+</table>
+
+<div class="content">
+    {{ contract.content|raw }}
+</div>
+
+<div class="signature-box">
+    <h3>ციფრული ხელმოწერა</h3>
+    <img src="{{ signature.signatureData }}" alt="ხელმოწერა" width="300">
+</div>
+
+</body>
+</html>
